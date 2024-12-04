@@ -1,6 +1,7 @@
 #pragma once
 #include <utility>
 
+#include "show_grades.h"
 #include "base/view/base_view.h"
 #include "screens/modules/module_create.h"
 #include "screens/modules/show_modules.h"
@@ -21,6 +22,7 @@ public:
 
 
     Component modulesButton;
+    Component gradesButton;
     Component addModuleButton;
 
     Component backButton;
@@ -36,6 +38,17 @@ public:
                 ShowModules(navigator, courseId);
             }
         });
+
+        gradesButton = Button({
+            .label = "View Grades",
+            .on_click = [&] {
+                if (AuthService::getInstance()->getActiveUser()->getUserType() == "teacher") {
+                    ShowAllGrades(courseId);
+                    return;
+                }
+            }
+        });
+
 
         if (AuthService::getInstance()->getActiveUser()->getUserType() == "teacher") {
             addModuleButton = Button({
@@ -63,6 +76,7 @@ public:
         Components c;
 
         c.push_back(modulesButton);
+        c.push_back(gradesButton);
         if (AuthService::getInstance()->getActiveUser()->getUserType() == "teacher") {
             c.push_back(addModuleButton);
         }
@@ -74,6 +88,7 @@ public:
     Element getElement(Component layout) override {
         Elements vboxElements;
         vboxElements.push_back(modulesButton->Render());
+        vboxElements.push_back(gradesButton->Render());
         if (AuthService::getInstance()->getActiveUser()->getUserType() == "teacher") {
             vboxElements.push_back(addModuleButton->Render());
         }
