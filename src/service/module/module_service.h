@@ -27,7 +27,15 @@ public:
         return moduleIdToModules[courseId];
     }
 
-    void addModule(const string &courseId, Module *module) {
+    void deleteModule(const std::string &courseId, const std::string &moduleId) {
+        auto &modules = moduleIdToModules[courseId];
+        modules.erase(std::remove_if(modules.begin(), modules.end(), [&](const Module &module) {
+            return module.getTitle() == moduleId;
+        }), modules.end());
+        save();
+    }
+
+    void addModule(const string &courseId, const Module *module) {
         moduleIdToModules[courseId].push_back(*module);
         save();
     }
@@ -41,10 +49,18 @@ private:
         ifstream file(DATABASE);
         std::string line;
         while (getline(file, line)) {
+            if (line.empty()) {
+                continue;
+            }
             // separator is [#
             auto pos = line.find("[#");
             auto courseId = line.substr(0, pos);
             auto moduleDataString = line.substr(pos + 2);
+
+            if (moduleDataString == "[$" || moduleDataString.empty()) {
+                moduleIdToModules[courseId] = {};
+                continue;
+            }
 
             // moduleDataString is an array of modules separated by [$
             auto moduleStrings = split(moduleDataString, "[$");

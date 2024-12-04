@@ -7,7 +7,9 @@
 
 using namespace ftxui;
 
-static void ShowModule(const Module &module) {
+// used to show a module
+// displays the module title and content
+static void ShowModule(Navigator &navigator, const std::string &courseId, const Module &module) {
     auto screen = ScreenInteractive::Fullscreen();
 
     auto backButton = Button({
@@ -17,20 +19,46 @@ static void ShowModule(const Module &module) {
         }
     });
 
-    auto component = Container::Vertical({
-        backButton
-    });
+    Components bottomComponents;
+    bottomComponents.push_back(backButton);
+
+
+    if (AuthService::getInstance()->getActiveUser()->getUserType() == "teacher") {
+        auto deleteButton = Button({
+            .label = "Delete",
+            .on_click = [&] {
+                bool yes = false;
+                DialogView(navigator, "Delete Module", "Are you sure you want to delete this module?", [&, &yes] {
+                    yes = true;
+                    ModuleService::getInstance()->deleteModule(courseId, module.getTitle());
+                }).render();
+
+
+                if (yes) {
+                    screen.Post(Task{
+                        [&] {
+                            screen.Exit();
+                        }
+                    });
+                }
+            }
+        });
+        bottomComponents.push_back(deleteButton);
+    }
+
+    const auto component = Container::Horizontal(bottomComponents);
+
 
     const auto renderer = Renderer(component, [&] {
         return vbox({
                    text(module.getTitle()) | bold,
                    separator(),
                    vbox({
-                       text(module.getContent())
-                   }) | flex,
+                       paragraph(module.getContent())
+                   }) | flex | yframe,
                    separator(),
                    hbox({
-                       backButton->Render()
+                       component->Render()
                    })
                }) | border;
     });
@@ -38,15 +66,17 @@ static void ShowModule(const Module &module) {
 }
 
 static void ShowModules(Navigator &navigator, const std::string &courseId) {
-    const auto modules = ModuleService::getInstance()->getModules(courseId);
+    auto modules = ModuleService::getInstance()->getModules(courseId);
 
     ListView<Module> listView(navigator);
     listView.setShouldShowBackButton(true);
     listView.setItems(modules);
 
     ItemAdapter<Module> adapter{
-        .onClick = [&](const Module &module) {
-            ShowModule(module);
+        .onClick = [&, &listView](const Module &module) {
+            ShowModule(navigator, courseId, module);
+            ShowModules(navigator, courseId);
+            listView.getScreen()->Exit();
         },
         .render = [&](const EntryState &params, const Module &module) {
             auto e = vbox({
@@ -64,6 +94,3 @@ static void ShowModules(Navigator &navigator, const std::string &courseId) {
     listView.init();
     listView.render();
 }
-
-
-

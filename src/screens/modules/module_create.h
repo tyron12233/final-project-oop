@@ -6,6 +6,8 @@
 
 using namespace ftxui;
 
+// used to create a new module
+// displays a form to input module name and content
 static Module* ModuleCreate() {
     std::string name;
     std::string content;

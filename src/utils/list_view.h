@@ -53,6 +53,10 @@ public:
         list = Container::Vertical(components);
     }
 
+    ScreenInteractive* getScreen() {
+        return &screen;
+    }
+
     Component getLayout() override {
         Components components;
 
