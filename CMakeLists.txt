@@ -56,6 +56,7 @@ add_executable(LayoutEngine src/main.cpp
         src/screens/home/teacher/teacher_home.h
         src/screens/home/teacher/teacher_home_model.h
         src/screens/modules/module_create.h
+        src/screens/home/admin/add_teacher/add_teacher.h
 )
 target_include_directories(LayoutEngine PRIVATE src)
 

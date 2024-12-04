@@ -52,11 +52,17 @@ public:
 
         Loop loop(&screen, renderer);
 
-            while (!loop.HasQuitted()) {
+        while (!loop.HasQuitted() && !exit) {
             onLoop();
             loop.RunOnce();
         }
     }
 
     virtual void onLoop() {}
+
+    bool exit = false;
+
+    void ExitNow() {
+        exit = true;
+    }
 };

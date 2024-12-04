@@ -27,6 +27,12 @@ public:
     Component passwordComponent;
 
 
+    Component backComponent = Button({
+        .label = "Back",
+        .on_click = [&] {
+            screen.Exit();
+        }
+    });
     Component createButtonComponent;
 
 
@@ -75,7 +81,7 @@ public:
 
                 bool positive = false;
 
-                DialogView dialogView(navigator, "Are you sure", "Are you sure you want to create a new course?", [this, &positive] {
+                DialogView dialogView(navigator, "Are you sure", "Are you sure you want to create a new course?", [&, this, &positive] {
                     const auto courseStore = CourseStore::getInstance().get();
                     courseStore->createCourse(courseName, description, selectedTeacher);
                     positive = true;
@@ -83,16 +89,13 @@ public:
                 dialogView.render();
 
                 if (positive) {
-                    screen.Post(Task([this] {
+                    screen.Post(Task{[this] {
                         DialogView(navigator, "Success", "Course created successfully").render();
 
-                        screen.Post(Task([this] {
-                            screen.Exit();
-                        }));
-                    }));
+                        screen.Exit();
+                    }});
+
                 }
-
-
             },
             .transform = [&](const EntryState &params) {
                 auto element = text(params.label) | border;
@@ -116,6 +119,10 @@ public:
             return false;
         }
 
+        if (selectedTeacher == nullptr) {
+            return false;
+        }
+
         return true;
     }
 
@@ -125,6 +132,7 @@ public:
             courseNameComponent,
             courseDescriptionComponent,
 
+            backComponent,
             createButtonComponent,
         });
     }
@@ -141,9 +149,12 @@ public:
                    courseNameComponent->Render() | border,
                    courseDescriptionComponent->Render() | border,
 
+                    vbox({}) | flex,
+
                    separator(),
 
                    hbox({
+                       backComponent -> Render() | hcenter,
                         createButtonComponent -> Render() | hcenter
                    })
                }) | border;
