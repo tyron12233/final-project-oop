@@ -23,8 +23,21 @@ public:
     }
 
 
+
+
     std::vector<Module> getModules(const std::string &courseId) {
         return moduleIdToModules[courseId];
+    }
+
+    void editModule(const std::string &courseId, const std::string &moduleId, const Module *module) {
+        auto &modules = moduleIdToModules[courseId];
+        for (auto &m: modules) {
+            if (m.getTitle() == moduleId) {
+                m = *module;
+                break;
+            }
+        }
+        save();
     }
 
     void deleteModule(const std::string &courseId, const std::string &moduleId) {

@@ -8,16 +8,21 @@ using namespace ftxui;
 
 // used to create a new module
 // displays a form to input module name and content
-static Module* ModuleCreate() {
+static Module* ModuleCreate(bool editMode = false, Module *module = nullptr) {
     std::string name;
     std::string content;
-    Module *module = nullptr;
+
+    if (module != nullptr) {
+        name = module->getTitle();
+        content = module->getContent();
+    }
 
     auto screen = ScreenInteractive::Fullscreen();
 
     auto backButton = Button({
         .label = "Back",
         .on_click = [&] {
+            module = nullptr;
             screen.Exit();
         }
     });
@@ -31,7 +36,7 @@ static Module* ModuleCreate() {
         .multiline = true,
     });
     auto createButton = Button({
-        .label = "Create",
+        .label = editMode ? "Save" : "Create",
         .on_click = [&] {
             screen.Exit();
             module = new Module(name, content);

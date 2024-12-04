@@ -9,7 +9,7 @@ using namespace ftxui;
 
 // used to show a module
 // displays the module title and content
-static void ShowModule(Navigator &navigator, const std::string &courseId, const Module &module) {
+static void ShowModule(Navigator &navigator, const std::string &courseId, Module &module) {
     auto screen = ScreenInteractive::Fullscreen();
 
     auto backButton = Button({
@@ -44,6 +44,21 @@ static void ShowModule(Navigator &navigator, const std::string &courseId, const 
             }
         });
         bottomComponents.push_back(deleteButton);
+
+        auto editButton = Button({
+            .label = "Edit",
+            .on_click = [&] {
+                auto newModule = ModuleCreate(true, new Module(module));
+                if (newModule != nullptr) {
+                    ModuleService::getInstance()->editModule(courseId, module.getTitle(), newModule);
+                    DialogView(navigator, "Success", "Module updated successfully!").render();
+
+                    // update the module
+                    module = *newModule;
+                }
+            }
+        });
+        bottomComponents.push_back(editButton);
     }
 
     const auto component = Container::Horizontal(bottomComponents);
@@ -73,7 +88,7 @@ static void ShowModules(Navigator &navigator, const std::string &courseId) {
     listView.setItems(modules);
 
     ItemAdapter<Module> adapter{
-        .onClick = [&, &listView](const Module &module) {
+        .onClick = [&, &listView](Module module) {
             ShowModule(navigator, courseId, module);
             ShowModules(navigator, courseId);
             listView.getScreen()->Exit();
