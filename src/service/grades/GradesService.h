@@ -26,16 +26,25 @@ public:
     }
 
 
+   void editGrade(const string &studentId, const string &courseId, const Grade &oldGrade, const Grade *newGrade) {
+        auto &grades = studentIdToGrades[courseId + studentId];
+        for (auto &grade: grades) {
+            if (grade.getTitle() == oldGrade.getTitle()) {
+                grade = *newGrade;
+                save();
+                return;
+            }
+        }
+    }
 
-
-    std::vector<Grade> getGrades(const std::string &studentId) {
-        return studentIdToGrades[studentIdToGrades];
+    std::vector<Grade> getGrades(const std::string &studentId, const std::string &courseId) {
+        return studentIdToGrades[courseId + studentId];
     }
 
 
 
-    void addGrade(const string &studentId, const Grade *grade) {
-        studentIdToGrades[studentId].push_back(*grade);
+    void addGrade(const string &studentId, const string &courseId, const Grade *grade) {
+        studentIdToGrades[courseId + studentId].push_back(*grade);
         save();
     }
 
@@ -65,6 +74,9 @@ private:
             auto gradesString = split(moduleDataString, "[$");
             std::vector<Grade> grades;
             for (const auto &gradeString: gradesString) {
+                if (gradeString.empty()) {
+                    continue;
+                }
                 grades.push_back(Grade::fromLineString(gradeString));
             }
 

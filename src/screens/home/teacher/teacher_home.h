@@ -19,6 +19,7 @@ public:
 
     Component courses;
     Component backButton;
+    Component logoutButton;
 
 
     void init() override {
@@ -44,17 +45,22 @@ public:
                 screen.Exit();
             }
         });
+
+        logoutButton = Button({
+            .label = "Logout",
+            .on_click = [&] {
+                AuthService::getInstance()->logout();
+                navigator.navigate("/");
+            }
+        });
     }
 
 
     Component getLayout() override {
         Components horizontals;
 
-
-
         horizontals.push_back(courses);
-
-        horizontals.push_back(backButton);
+        horizontals.push_back(logoutButton);
 
         return Container::Vertical(horizontals);
     }
@@ -71,7 +77,7 @@ public:
 
             separator(),
             hbox({
-                backButton->Render()
+                logoutButton->Render(),
             })
         }) | border;
     }

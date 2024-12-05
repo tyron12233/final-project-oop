@@ -40,9 +40,10 @@ public:
         courses = Container::Vertical(components);
 
         backButton = Button({
-            .label = "Back",
+            .label = "Logout",
             .on_click = [&] {
-                screen.Exit();
+                AuthService::getInstance()->logout();
+                navigator.navigate("/");
             }
         });
     }

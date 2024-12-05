@@ -45,6 +45,9 @@ public:
                 if (AuthService::getInstance()->getActiveUser()->getUserType() == "teacher") {
                     ShowAllGrades(courseId);
                     return;
+                } else if (AuthService::getInstance()->getActiveUser()->getUserType() == "student") {
+                    ShowGradeForStudent(courseId, AuthService::getInstance()->getActiveUser()->getId());
+                    return;
                 }
             }
         });

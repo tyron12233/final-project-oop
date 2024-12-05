@@ -61,6 +61,8 @@ add_executable(LayoutEngine src/main.cpp
         src/models/grade.h
         src/utils/string_split.h
         src/service/grades/GradesService.h
+        src/screens/course/add_grade.h
+        src/utils/integer_input.h
 )
 target_include_directories(LayoutEngine PRIVATE src)
 

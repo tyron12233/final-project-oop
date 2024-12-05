@@ -25,6 +25,11 @@ public:
         return std::to_string(users.size());
     }
 
+    void logout() {
+        delete activeUser;
+        activeUser = nullptr;
+    }
+
 
     [[nodiscard]] User *getActiveUser() const {
         return activeUser;
